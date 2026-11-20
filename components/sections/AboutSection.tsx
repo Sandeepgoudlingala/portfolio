@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { marqueeItemsRow1, marqueeItemsRow2 } from "@/lib/data/skills";
 import { ArrowUpRight, FileText, Terminal } from "lucide-react";
+import { soundEngine } from "@/lib/sound";
 
 /* ── Glitch Sweep Heading for "Who I am" ── */
 function AboutGlitchHeading() {
@@ -115,7 +116,12 @@ export function AboutSection() {
   return (
     <>
       {/* ── Marquee Band (Single Unified Line Rolling Left to Right) ── */}
-      <div className="py-5 sm:py-6 border-y border-white/10 bg-[#070707]/95 backdrop-blur-md overflow-hidden select-none">
+      <div
+        onPointerDown={() => soundEngine.playMarqueeCharge()}
+        onPointerUp={() => soundEngine.playMarqueeRelease()}
+        onPointerLeave={() => soundEngine.playMarqueeRelease()}
+        className="py-5 sm:py-6 border-y border-white/10 bg-[#070707]/95 backdrop-blur-md overflow-hidden select-none cursor-grab active:cursor-grabbing"
+      >
         <div className="w-full overflow-hidden flex">
           <div className="flex w-max shrink-0 animate-marquee-right">
             {[0, 1, 2, 3].map((copy) => (

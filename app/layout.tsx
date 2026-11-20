@@ -7,6 +7,7 @@ import { CustomCursor } from "@/components/CustomCursor";
 import { Navbar } from "@/components/Navbar";
 import { Hud } from "@/components/Hud";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { SoundEffectsProvider } from "@/components/SoundEffectsProvider";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -112,25 +113,27 @@ export default function RootLayout({
       className={`dark ${archivo.variable} ${sora.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} ${vt323.variable}`}
     >
       <body className="bg-black text-white font-sans selection:bg-accent selection:text-black antialiased relative min-h-screen">
-        <SmoothScroll>
-          {/* Subtle Film Grain Overlay */}
-          <Grain />
+        <SoundEffectsProvider>
+          <SmoothScroll>
+            {/* Subtle Film Grain Overlay */}
+            <Grain />
 
-          {/* Calm Ambient Cosmic Starfield */}
-          <Starfield />
+            {/* Calm Ambient Cosmic Starfield */}
+            <Starfield />
 
-          {/* Custom Magnetic Cursor */}
-          <CustomCursor />
+            {/* Custom Magnetic Cursor */}
+            <CustomCursor />
 
-          {/* Fixed Nav Bar */}
-          <Navbar />
+            {/* Fixed Nav Bar */}
+            <Navbar />
 
-          {/* Main App Content */}
-          <main className="relative z-10">{children}</main>
+            {/* Main App Content */}
+            <main className="relative z-10">{children}</main>
 
-          {/* Bottom Heads-Up Display (HUD) */}
-          <Hud />
-        </SmoothScroll>
+            {/* Bottom Heads-Up Display (HUD) */}
+            <Hud />
+          </SmoothScroll>
+        </SoundEffectsProvider>
 
         {/* Vercel Analytics */}
         <Analytics />

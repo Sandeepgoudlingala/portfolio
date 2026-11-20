@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
+import { soundEngine } from "@/lib/sound";
 
 interface MenuItem {
   n: string;
@@ -176,76 +177,45 @@ function MenuGlitchLink({
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const gainNodeRef = useRef<GainNode | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = soundEngine.subscribe((enabled) => {
+      setIsAudioPlaying(enabled);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Keyboard navigation: Close menu on Escape
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        if (isOpen) {
+          soundEngine.playMenuClose();
+        }
         setIsOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [isOpen]);
 
-  // Web Audio API ambient drone toggle (Exact frequencies from sandeep-anim.html: 55Hz, 82.4Hz, 110.5Hz)
   const toggleSound = () => {
-    try {
-      if (!audioCtxRef.current) {
-        const AudioContextClass =
-          window.AudioContext ||
-          (window as unknown as { webkitAudioContext: typeof AudioContext })
-            .webkitAudioContext;
-        const ctx = new AudioContextClass();
-        audioCtxRef.current = ctx;
+    soundEngine.toggle();
+  };
 
-        const masterGain = ctx.createGain();
-        masterGain.gain.setValueAtTime(0, ctx.currentTime);
-        masterGain.connect(ctx.destination);
-        gainNodeRef.current = masterGain;
+  const openMenu = () => {
+    soundEngine.playMenuOpen();
+    setIsOpen(true);
+  };
 
-        const freqs = [55, 82.4, 110.5];
-        const gains = [0.035, 0.02, 0.01];
-
-        freqs.forEach((f, i) => {
-          const osc = ctx.createOscillator();
-          osc.type = "sine";
-          osc.frequency.setValueAtTime(f, ctx.currentTime);
-
-          const g = ctx.createGain();
-          g.gain.setValueAtTime(gains[i], ctx.currentTime);
-
-          osc.connect(g);
-          g.connect(masterGain);
-          osc.start();
-        });
-      }
-
-      const ctx = audioCtxRef.current;
-      const masterGain = gainNodeRef.current;
-      if (!ctx || !masterGain) return;
-
-      if (ctx.state === "suspended") {
-        ctx.resume();
-      }
-
-      if (!isAudioPlaying) {
-        masterGain.gain.setTargetAtTime(0.05, ctx.currentTime, 0.15);
-        setIsAudioPlaying(true);
-      } else {
-        masterGain.gain.setTargetAtTime(0, ctx.currentTime, 0.15);
-        setIsAudioPlaying(false);
-      }
-    } catch {
-      // AudioContext fallback
-    }
+  const closeMenu = () => {
+    soundEngine.playMenuClose();
+    setIsOpen(false);
   };
 
   // Smooth scroll handler
   const handleNavigate = (href: string) => {
-    setIsOpen(false);
+    closeMenu();
     const targetId = href.replace("#", "");
     const el = document.getElementById(targetId);
     if (el) {
@@ -264,7 +234,7 @@ export function Navbar() {
           {/* Left: Menu Button */}
           <div>
             <button
-              onClick={() => setIsOpen(true)}
+              onClick={openMenu}
               aria-expanded={isOpen}
               aria-controls="fullscreen-menu"
               className="text-white hover:text-accent transition-colors py-1 focus-visible:outline-accent"
@@ -356,7 +326,7 @@ export function Navbar() {
         {/* Top bar: Close Button */}
         <div className="flex justify-between items-center z-10">
           <button
-            onClick={() => setIsOpen(false)}
+            onClick={closeMenu}
             aria-label="Close menu"
             className="text-muted hover:text-white font-mono text-xs tracking-widest uppercase transition-colors py-2"
           >
