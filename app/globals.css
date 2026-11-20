@@ -1,0 +1,354 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #000000;
+  --fg: #ffffff;
+  --mut: #8a8a8a;
+  --accent: #8fb3d9;
+  --accent-dark: #4f7aa8;
+  --line: rgba(255, 255, 255, 0.14);
+  --card: #141414;
+  --card-border: #333333;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: #000000;
+  color: #ffffff;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: #000000;
+  color: #ffffff;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Interactive Cursor Setup - smooth pointer on interactive targets */
+a, button, [role="button"], input, textarea, select, .cursor-pointer, .cursor-hover {
+  cursor: pointer;
+}
+
+/* Lenis Recommended Smooth Scroll CSS */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #404040;
+}
+
+/* Text outline utilities */
+.text-stroke-2 {
+  -webkit-text-stroke: 2px #ffffff;
+  color: transparent;
+}
+
+.text-stroke-1 {
+  -webkit-text-stroke: 1px #ffffff;
+  color: transparent;
+}
+
+.text-stroke-dim {
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.25);
+  color: transparent;
+}
+
+/* Glitch sweep overlay with signature steel-blue #8fb3d9 */
+.gl-container {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.gl-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: #8fb3d9 !important;
+  color: #000000 !important;
+  clip-path: polygon(0 50%, 100% 50%, 100% 50%, 0 50%);
+  transition: clip-path 0.38s cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  font-weight: 900;
+  z-index: 2;
+  padding: inherit;
+  box-shadow: 0 0 25px rgba(143, 179, 217, 0.45);
+}
+
+.gl-container:hover .gl-overlay,
+.gl-container:active .gl-overlay,
+.gl-container.is-active .gl-overlay,
+.gl-overlay-active {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%) !important;
+}
+
+/* Continuous smooth rotation for the text arc and rolling SG badge */
+@keyframes spinClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-20s {
+  animation: spinClockwise 20s linear infinite !important;
+  will-change: transform;
+}
+
+.animate-spin-12s {
+  animation: spinClockwise 12s linear infinite !important;
+  will-change: transform;
+}
+
+/* Marquee infinite scroll keyframes (Left to Right) */
+@keyframes marqueeScrollRight {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes marqueeScrollLeft {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee-right {
+  animation: marqueeScrollRight 58s linear infinite !important;
+  will-change: transform;
+}
+
+.animate-marquee-right-offset {
+  animation: marqueeScrollRight 65s linear infinite !important;
+  will-change: transform;
+}
+
+.animate-marquee-left {
+  animation: marqueeScrollLeft 58s linear infinite !important;
+  will-change: transform;
+}
+
+/* Subtle Film Grain */
+.grain-overlay {
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Starfield Canvas & Background strictly behind all text & UI */
+.starfield-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0 !important;
+  pointer-events: none;
+}
+
+main {
+  position: relative;
+  z-index: 10;
+}
+
+/* Accessible focus visible outlines */
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* ===== Animated Hero Background from sandeep-anim (2).html ===== */
+.hg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255, 255, 255, .06) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .06) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 40%, #000 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse at 50% 40%, #000 20%, transparent 75%);
+  animation: gm 14s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes gm {
+  to {
+    background-position: 0 56px;
+  }
+}
+
+.hz {
+  position: absolute;
+  left: 50%;
+  top: 82%;
+  width: 160%;
+  height: 160vw;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 0, rgba(255, 255, 255, .16), transparent 55%), #050505;
+  border-top: 1px solid rgba(255, 255, 255, .55);
+  box-shadow: 0 -30px 90px rgba(255, 255, 255, .14), inset 0 30px 80px rgba(255, 255, 255, .08);
+  animation: hzp 6s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes hzp {
+  from {
+    opacity: .5;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sh {
+  position: absolute;
+  width: var(--w);
+  height: var(--h);
+  will-change: transform;
+  animation: fin 1.6s ease-out both;
+  animation-delay: var(--dl);
+  pointer-events: none;
+}
+
+@keyframes fin {
+  from {
+    opacity: 0;
+  }
+}
+
+.sh i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, .2);
+  background: linear-gradient(90deg, rgba(255, 255, 255, .14), transparent);
+  box-shadow: 0 8px 32px rgba(255, 255, 255, .08), inset 0 0 32px rgba(255, 255, 255, .06);
+  transform: rotate(var(--r));
+  animation: fl 12s ease-in-out infinite;
+  animation-delay: var(--dl);
+}
+
+@keyframes fl {
+  0%, 100% {
+    transform: translateY(0) rotate(var(--r));
+  }
+  50% {
+    transform: translateY(18px) rotate(var(--r));
+  }
+}
+
+.tap {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  animation: tp .9s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes tp {
+  to {
+    transform: scale(14);
+    opacity: 0;
+  }
+}
+
+.hint {
+  display: none;
+  position: absolute;
+  top: 5.2rem;
+  right: clamp(1rem, 3vw, 2rem);
+  margin: 0;
+  color: var(--mut);
+  transition: opacity .4s;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.hg.used .hint {
+  opacity: 0;
+}
+
+@media (pointer: coarse) {
+  .hint {
+    display: block;
+  }
+}
+
+/* Reduce motion overrides (Preserve continuous marquee tickers & hero animated elements) */
+@media (prefers-reduced-motion: reduce) {
+  *:not(.animate-marquee-right):not(.animate-marquee-right-offset):not(.animate-marquee-left):not(.animate-spin-20s):not(.hg):not(.hz):not(.sh):not(.sh i),
+  ::before:not(.hg::before),
+  ::after {
+    scroll-behavior: auto !important;
+  }
+}
