@@ -182,6 +182,16 @@ export function ContactSection() {
             </>
           )}
         </button>
+
+        <a
+          href="https://wa.me/919347651574"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-xs font-mono text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-400 transition-all cursor-pointer"
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span>WhatsApp: +91 93476 51574</span>
+        </a>
       </div>
 
       {/* Resume & Fast Actions Banner */}
@@ -234,6 +244,16 @@ export function ContactSection() {
           className="inline-flex items-center justify-center gap-1.5 px-6 py-3.5 rounded-full border border-white/20 bg-[#121212] text-white font-archivo font-bold text-sm tracking-tight hover:border-[#8fb3d9] hover:bg-[#8fb3d9]/10 hover:scale-105 active:bg-[#8fb3d9] active:text-black transition-all shadow-md cursor-pointer"
         >
           <span>LinkedIn</span>
+          <span className="text-white/70">↗</span>
+        </a>
+
+        <a
+          href="https://wa.me/919347651574"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-1.5 px-6 py-3.5 rounded-full border border-white/20 bg-[#121212] text-white font-archivo font-bold text-sm tracking-tight hover:border-emerald-400 hover:bg-emerald-500/10 hover:scale-105 active:bg-emerald-500 active:text-black transition-all shadow-md cursor-pointer"
+        >
+          <span>WhatsApp</span>
           <span className="text-white/70">↗</span>
         </a>
 
