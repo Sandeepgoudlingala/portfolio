@@ -344,6 +344,32 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   }
 }
 
+/* Audio Equalizer Bars animation from sandeep-anim.html */
+@keyframes equalizerBar {
+  0% {
+    height: 3px;
+  }
+  100% {
+    height: 10px;
+  }
+}
+
+.animate-bar-1 {
+  animation: equalizerBar 0.7s ease-in-out infinite alternate !important;
+}
+
+.animate-bar-2 {
+  animation: equalizerBar 0.7s ease-in-out 0.15s infinite alternate !important;
+}
+
+.animate-bar-3 {
+  animation: equalizerBar 0.7s ease-in-out 0.3s infinite alternate !important;
+}
+
+.animate-bar-4 {
+  animation: equalizerBar 0.7s ease-in-out 0.45s infinite alternate !important;
+}
+
 /* Reduce motion overrides (Preserve continuous marquee tickers & hero animated elements) */
 @media (prefers-reduced-motion: reduce) {
   *:not(.animate-marquee-right):not(.animate-marquee-right-offset):not(.animate-marquee-left):not(.animate-spin-20s):not(.hg):not(.hz):not(.sh):not(.sh i),

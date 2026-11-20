@@ -7,6 +7,9 @@ import {
   FileText,
   Copy,
   Check,
+  X,
+  Send,
+  Loader2,
 } from "lucide-react";
 
 interface GlitchSweepProps {
@@ -125,6 +128,46 @@ function GlitchSweep({
 
 export function ContactSection() {
   const [copied, setCopied] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [formError, setFormError] = useState("");
+
+  // Close modal on Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsModalOpen(false);
+      }
+    };
+    if (isModalOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isModalOpen]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormStatus("loading");
+    setFormError("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to send message.");
+      }
+      setFormStatus("success");
+      setFormData({ name: "", email: "", message: "" });
+    } catch (err: unknown) {
+      setFormStatus("error");
+      setFormError(err instanceof Error ? err.message : "Something went wrong.");
+    }
+  };
 
   const copyEmail = async () => {
     try {
@@ -220,12 +263,12 @@ export function ContactSection() {
 
       {/* Social Media & Action Bubbles */}
       <div className="flex flex-wrap items-center gap-3 sm:gap-4 my-8 relative z-10">
-        <a
-          href="mailto:lingalasandeepgoud1234@gmail.com"
+        <button
+          onClick={() => setIsModalOpen(true)}
           className="inline-flex items-center justify-center px-7 py-3.5 rounded-full bg-white text-black font-archivo font-bold text-sm tracking-tight hover:bg-[#8fb3d9] hover:text-black hover:scale-105 active:scale-95 transition-all shadow-md cursor-pointer"
         >
           Write to me
-        </a>
+        </button>
 
         <a
           href="https://github.com/Sandeepgoudlingala"
@@ -278,6 +321,147 @@ export function ContactSection() {
           Next.js App Router · Vercel · Tailwind CSS
         </p>
       </div>
+
+      {/* ── Direct Message Modal ─────────────────────────────── */}
+      {isModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-xl animate-fade-in"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-lg rounded-3xl border border-white/20 bg-[#0c0c0e] p-6 sm:p-8 shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top Sheen Line */}
+            <div
+              className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#8fb3d9] to-transparent pointer-events-none"
+              aria-hidden="true"
+            />
+
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-4 mb-6 border-b border-white/10">
+              <div>
+                <span className="font-mono text-[11px] uppercase tracking-widest text-[#8fb3d9] block mb-1">
+                  Direct Channel
+                </span>
+                <h3 className="font-archivo font-black text-2xl text-white uppercase tracking-tight">
+                  Write To Me
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
+                aria-label="Close dialog"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Form */}
+            {formStatus === "success" ? (
+              <div className="py-8 text-center space-y-4">
+                <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto">
+                  <Check className="w-7 h-7" />
+                </div>
+                <h4 className="font-archivo font-bold text-xl text-white">
+                  Message Dispatched!
+                </h4>
+                <p className="font-archivo text-xs sm:text-sm text-muted max-w-sm mx-auto">
+                  Thank you! Your message was transmitted. I will review and get back to you shortly.
+                </p>
+                <button
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setFormStatus("idle");
+                  }}
+                  className="px-6 py-2.5 rounded-full bg-white text-black font-archivo font-bold text-xs uppercase tracking-wider hover:bg-[#8fb3d9] transition-all cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block font-mono text-[11px] uppercase tracking-wider text-muted mb-1.5">
+                    Your Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Jane Doe"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/10 text-white placeholder-white/30 text-sm font-archivo focus:outline-none focus:border-[#8fb3d9] transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-mono text-[11px] uppercase tracking-wider text-muted mb-1.5">
+                    Your Email
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="jane@company.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/10 text-white placeholder-white/30 text-sm font-archivo focus:outline-none focus:border-[#8fb3d9] transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-mono text-[11px] uppercase tracking-wider text-muted mb-1.5">
+                    Message
+                  </label>
+                  <textarea
+                    required
+                    rows={4}
+                    placeholder="Hello Sandeep, I'd like to discuss a role..."
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="w-full px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/10 text-white placeholder-white/30 text-sm font-archivo focus:outline-none focus:border-[#8fb3d9] transition-colors resize-none"
+                  />
+                </div>
+
+                {formError && (
+                  <p className="font-mono text-xs text-red-400 bg-red-500/10 border border-red-500/20 p-2.5 rounded-xl">
+                    {formError}
+                  </p>
+                )}
+
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <a
+                    href="mailto:lingalasandeepgoud1234@gmail.com"
+                    className="text-[11px] font-mono text-white/50 hover:text-white transition-colors underline underline-offset-4"
+                  >
+                    Or open desktop email client ↗
+                  </a>
+
+                  <button
+                    type="submit"
+                    disabled={formStatus === "loading"}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3 rounded-full bg-white text-black font-archivo font-bold text-xs uppercase tracking-wider hover:bg-[#8fb3d9] hover:text-black active:scale-95 transition-all shadow-md cursor-pointer disabled:opacity-50"
+                  >
+                    {formStatus === "loading" ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Sending...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5" />
+                        <span>Send Message</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </footer>
   );
 }

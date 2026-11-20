@@ -14,6 +14,28 @@ export function Hud() {
   const [activeSection, setActiveSection] = useState("01 The leap");
   const [scrollProgress, setScrollProgress] = useState(0);
   const [altitude, setAltitude] = useState(12400);
+  const [istTime, setIstTime] = useState("");
+
+  useEffect(() => {
+    const updateTime = () => {
+      try {
+        const now = new Date();
+        setIstTime(
+          now.toLocaleTimeString("en-US", {
+            timeZone: "Asia/Kolkata",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          })
+        );
+      } catch {
+        // fallback
+      }
+    };
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,8 +71,15 @@ export function Hud() {
       className="fixed bottom-4 sm:bottom-6 left-4 sm:left-8 right-4 sm:right-8 z-30 pointer-events-none flex items-center justify-between gap-4 font-mono text-[9px] sm:text-[10px] tracking-widest text-muted mix-blend-difference select-none"
       aria-label="Page scroll progress hud"
     >
-      {/* Active Section Label */}
-      <span className="w-28 sm:w-36 uppercase truncate">{activeSection}</span>
+      {/* Active Section Label & Live IST Time */}
+      <div className="flex items-center gap-3 w-40 sm:w-52">
+        <span className="uppercase truncate">{activeSection}</span>
+        {istTime && (
+          <span className="hidden md:inline text-white/40 border-l border-white/20 pl-3">
+            HYD · {istTime} IST
+          </span>
+        )}
+      </div>
 
       {/* Progress Track */}
       <div className="flex-1 h-[2px] bg-white/10 rounded-full overflow-hidden max-w-xl mx-auto">

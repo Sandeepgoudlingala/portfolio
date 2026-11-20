@@ -175,6 +175,9 @@ function MenuGlitchLink({
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
 
   // Keyboard navigation: Close menu on Escape
   useEffect(() => {
@@ -186,6 +189,59 @@ export function Navbar() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  // Web Audio API ambient drone toggle (Exact frequencies from sandeep-anim.html: 55Hz, 82.4Hz, 110.5Hz)
+  const toggleSound = () => {
+    try {
+      if (!audioCtxRef.current) {
+        const AudioContextClass =
+          window.AudioContext ||
+          (window as unknown as { webkitAudioContext: typeof AudioContext })
+            .webkitAudioContext;
+        const ctx = new AudioContextClass();
+        audioCtxRef.current = ctx;
+
+        const masterGain = ctx.createGain();
+        masterGain.gain.setValueAtTime(0, ctx.currentTime);
+        masterGain.connect(ctx.destination);
+        gainNodeRef.current = masterGain;
+
+        const freqs = [55, 82.4, 110.5];
+        const gains = [0.035, 0.02, 0.01];
+
+        freqs.forEach((f, i) => {
+          const osc = ctx.createOscillator();
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(f, ctx.currentTime);
+
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(gains[i], ctx.currentTime);
+
+          osc.connect(g);
+          g.connect(masterGain);
+          osc.start();
+        });
+      }
+
+      const ctx = audioCtxRef.current;
+      const masterGain = gainNodeRef.current;
+      if (!ctx || !masterGain) return;
+
+      if (ctx.state === "suspended") {
+        ctx.resume();
+      }
+
+      if (!isAudioPlaying) {
+        masterGain.gain.setTargetAtTime(0.05, ctx.currentTime, 0.15);
+        setIsAudioPlaying(true);
+      } else {
+        masterGain.gain.setTargetAtTime(0, ctx.currentTime, 0.15);
+        setIsAudioPlaying(false);
+      }
+    } catch {
+      // AudioContext fallback
+    }
+  };
 
   // Smooth scroll handler
   const handleNavigate = (href: string) => {
@@ -230,8 +286,42 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Right: Contact */}
-          <div className="justify-self-end flex items-center">
+          {/* Right: Sound Toggle + Contact */}
+          <div className="justify-self-end flex items-center gap-4 sm:gap-7">
+            {/* Sound Toggle with Equalizer Bars from sandeep-anim.html */}
+            <button
+              onClick={toggleSound}
+              aria-pressed={isAudioPlaying}
+              aria-label="Toggle ambient sound"
+              className="group flex items-center gap-2 text-white hover:text-accent transition-colors py-1 cursor-pointer focus-visible:outline-accent"
+            >
+              <span className="hidden sm:inline text-[10px] tracking-widest text-white/70 group-hover:text-white">
+                {isAudioPlaying ? "Sound on" : "Sound off"}
+              </span>
+              <span className="flex items-end gap-[2px] h-[10px] pb-[1px]" aria-hidden="true">
+                <span
+                  className={`w-[2px] bg-white transition-all ${
+                    isAudioPlaying ? "animate-bar-1" : "h-[3px]"
+                  }`}
+                />
+                <span
+                  className={`w-[2px] bg-white transition-all ${
+                    isAudioPlaying ? "animate-bar-2" : "h-[3px]"
+                  }`}
+                />
+                <span
+                  className={`w-[2px] bg-white transition-all ${
+                    isAudioPlaying ? "animate-bar-3" : "h-[3px]"
+                  }`}
+                />
+                <span
+                  className={`w-[2px] bg-white transition-all ${
+                    isAudioPlaying ? "animate-bar-4" : "h-[3px]"
+                  }`}
+                />
+              </span>
+            </button>
+
             {/* Let's Talk */}
             <Link
               href="#contact"
